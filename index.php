@@ -14,14 +14,74 @@ Author URI: http://rankexecutives.com
 
 
 
-class RankExecutive_ShortCodes {
+class RankExecutive_ShortCodes 
+{
   function __construct()
   {
     add_action('media_buttons',array(&$this,'select_grid'),11);
 add_shortcode( 'grid', array(&$this,'get_grid' ));
 add_shortcode( 'row', array(&$this,'get_row' ));
-add_action('admin_head', array(&$this,'button_js'));
+add_shortcode( 'button', array(&$this,'get_button' ));
+add_shortcode( 'alert', array(&$this,'get_alert' ));
 
+
+
+  }
+  function get_alert($attr, $text)
+  {
+       extract( shortcode_atts(
+    array(
+      'type' => 'red',
+    ), $attr )
+  );
+
+return "<div class='alert alert-".$type."'>".$text."</div>";
+  }
+  function get_button($attr)
+  {
+      extract( shortcode_atts(
+    array(
+      'color' => 'red',
+      'link'=>'#',
+      'text'=>'button',
+      'col' => 0,
+    ), $attr )
+  );
+      switch($color)
+      {
+        case 'default':
+        $cs ='btn btn-default';
+        break;
+         case 'red':
+        $cs ='btn btn-danger';
+        break;
+         case 'orange':
+        $cs ='btn btn-warning';
+        break;
+         case 'green':
+        $cs ='btn btn-success';
+        break;
+         case 'blue':
+        $cs ='btn btn-info';
+        break;
+         case 'primary':
+        $cs ='btn btn-primary';
+        break;
+      }
+      switch($size)
+      {
+        case 'small':
+        $size  = ' btn-sm';
+        break;
+          case 'medium':
+        $size  = '';
+        break;
+          case 'large':
+        $size  = ' btn-lg';
+        break;
+
+      }
+    return "<button class='".$cs.$size."' href='".$link."' role='button'>".$text."</button>";
   }
 function get_grid($attr, $text)
 {
@@ -31,7 +91,7 @@ function get_grid($attr, $text)
       'col' => 0,
     ), $attr )
   );
-    return "<div class='".$target." col-".$col."'>".$text."</div>";
+    return "<div class='".$target." col-".$col."'>".do_shortcode($text)."</div>";
 }
 function get_row($attr, $content)
 {
@@ -40,7 +100,7 @@ function get_row($attr, $content)
 function select_grid(){  
 ?>
     <select id="grid_select">
-                        <option>SelGrid</option>
+                        <option>Grid</option>
                         <option value="[row][/row]">row</option>
                       <option value="[grid col='1'][/grid]">grid 1</option>
                       <option value="[grid col='2'][/grid]">grid 2</option>
@@ -56,22 +116,31 @@ function select_grid(){
                       <option value="[grid col='1'][/grid]">grid 12</option>
 
         </select>
+            <select id="grid_button">
+                        <option>Buttons</option>
+                      <option value="[button color='default' link='#' text='button']">default</option>
+                      <option value="[button color='primary'  link='#' text='button']">primary</option>
+                      <option value="[button color='green'  link='#' text='button']">green</option>
+                      <option value="[button color='blue'  link='#' text='button']">blue</option>
+                      <option value="[button color='orange'  link='#' text='button']">orange</option>
+                      <option value="[button color='red'  link='#' text='button']">red</option>
+
+        </select>
+                 <select id="grid_alert">
+                        <option>Alerts</option>
+                      <option value="[alert type='success'][/alert]">success</option>
+                       <option value="[alert type='info'][/alert]">info</option>
+                        <option value="[alert type='warning'][/alert]">warning</option>
+                         <option value="[alert type='danger'][/alert]">danger</option>
+
+
+        </select>
+
         <?php
 
 }
-function button_js() {
-        echo '<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
-        <script type="text/javascript">
-        jQuery(document).ready(function(){
-           $("#grid_select").change(function() {
-            $("#content").val($("#content").val()+$("#grid_select :selected").val());})
-        });
-        </script>';
 }
-}
-if(!class_exists('RankExecutive_ShortCodes'))
-{
 $RankExecutive_ShortCodes = new RankExecutive_ShortCodes();
-}
+
 
 
